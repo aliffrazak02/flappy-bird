@@ -30,8 +30,11 @@ let bottomPipeImg;
 
 //Physics
 let velocityX = -2; //pipe moving left speed
+let velocityY = 0; //bird falling speed
+let gravity = 0.4; //gravity effect on the bird
 
-
+let gameOver = false; // Game over flag
+let score = 0; // Score variable
 
 window.onload = function() {
     board = document.getElementById("board");
@@ -54,31 +57,53 @@ window.onload = function() {
 
     requestAnimationFrame(update);
     setInterval(placePipes, 1500);
+
+    document.addEventListener("keydown", moveBird);
 }
 
 function update() {
     requestAnimationFrame(update);
+    if (gameOver) {return; } // Stop updating if game is over
     context.clearRect(0, 0, boardWidth, boardHeight);
 
     //bird
+    velocityY += gravity; // Apply gravity to the bird's vertical velocity
+    //bird.y += velocityY; // Apply gravity to the bird
+    bird.y = Math.max(bird.y + velocityY,0); // Prevent bird from going above the top of the board
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
 
+    if (bird.y > board.height) {
+    gameOver = true; // Set game over flag if bird falls below the board
+    }
+
+    //pipes
     for (let i = 0; i < pipeArray.length; i++) {
         let pipe = pipeArray[i];
-        context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
         pipe.x += velocityX; // Move the pipes to the left
+        context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
 
         // Check if the bird has passed the pipe
         if (!pipe.passed && pipe.x + pipe.width < bird.x) {
+            score += 0.5; // Increment score if the bird passes the pipe
             pipe.passed = true;
             // Increment score or perform any action when the bird passes a pipe
         }
+
+        // Check for collision with the bird
+        if (detectCollision(bird, pipe)) {
+            gameOver = true; // Set game over flag if collision occurs}
+        }
+        
     }
+    //score 
+    context.fillStyle = "black";
+    context.font = "20px Arial";
+    context.fillText("Score: " + score, 10, 20); // Display
 
 }
 
 function placePipes() {
-
+    if (gameOver) {return; } // Stop updating if game is over
     let randomPipeY = pipeY - pipeHeight/4 - Math.random() * (pipeHeight/2);
     let openingSpace = boardHeight/4; // Space between top and bottom pipes
 
@@ -102,4 +127,19 @@ function placePipes() {
     };
 
     pipeArray.push(bottomPipe);
+}
+
+function moveBird(event) {
+    if (event.key === "ArrowUp" || event.key === " ") {
+        //jump the bird
+        velocityY -= 6; // Move the bird up by 50 pixels
+
+    }
+}
+
+function detectCollision(a,b) {
+    return a.x < b.x + b.width &&
+              a.x + a.width > b.x &&
+              a.y < b.y + b.height &&
+              a.y + a.height > b.y; 
 }
