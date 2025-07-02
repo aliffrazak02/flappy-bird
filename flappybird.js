@@ -95,10 +95,22 @@ function update() {
         }
         
     }
+
+    //clear pipes that are off-screen
+    while (pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
+        pipeArray.shift(); // Remove the first pipe if it's off-screen
+    }
     //score 
     context.fillStyle = "black";
     context.font = "20px Arial";
     context.fillText("Score: " + score, 10, 20); // Display
+
+    if (gameOver  ) {
+        context.fillStyle = "red ";
+        context.font = "30px Arial black";
+        context.fillText("GAME OVER", boardWidth / 2 - 100, boardHeight / 2);
+        context.fillText("Final Score: " + score, boardWidth / 2 - 105, boardHeight / 2 + 40);
+    }
 
 }
 
@@ -132,8 +144,16 @@ function placePipes() {
 function moveBird(event) {
     if (event.key === "ArrowUp" || event.key === " ") {
         //jump the bird
-        velocityY -= 6; // Move the bird up by 50 pixels
-
+        velocityY = -6; // Move the bird up by 50 pixels
+        //reset
+        if (gameOver) {
+            // Reset the game
+            bird.y = boardHeight / 2; // Reset bird position
+            pipeArray = []; // Clear pipes
+            score = 0; // Reset score
+            gameOver = false; // Reset game over flag
+            velocityY = 0; // Reset bird's vertical velocity
+        }
     }
 }
 
