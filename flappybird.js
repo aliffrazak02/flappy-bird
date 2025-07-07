@@ -9,7 +9,10 @@ let birdWidth = 34;
 let birdHeight = 24;
 let birdX = boardWidth/8;
 let birdY = boardHeight/2;
-let birdImg;
+
+// Load bird image
+let birdImgs = []
+let birdImgIndex = 0;
 
 let bird = {
     x: birdX,
@@ -48,10 +51,17 @@ window.onload = function() {
     context = board.getContext("2d");
 
     //Draw the flappy bird
-    birdImg = new Image();
-    birdImg.src = "assets/flappybird.png";
-    birdImg.onload = function() {
-        context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    // birdImg = new Image();
+    // birdImg.src = "assets/flappybird.png";
+    // birdImg.onload = function() {
+    //     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    // }
+
+    // Load bird images for animation
+    for (let i = 1; i <= 3; i++) {
+        let birdImg = new Image();
+        birdImg.src = `assets/flappybird${i}.png`; // Assuming images are named bird1.png, bird2.png, bird3.png
+        birdImgs.push(birdImg);
     }
 
     topPipeImg = new Image();
@@ -62,6 +72,7 @@ window.onload = function() {
 
     requestAnimationFrame(update);
     setInterval(placePipes, 1500);
+    setInterval(animateBird, 100);
 
     document.addEventListener("keydown", moveBird);
 }
@@ -75,7 +86,9 @@ function update() {
     velocityY += gravity; // Apply gravity to the bird's vertical velocity
     //bird.y += velocityY; // Apply gravity to the bird
     bird.y = Math.max(bird.y + velocityY,0); // Prevent bird from going above the top of the board
-    context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    // context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    context.drawImage(birdImgs[birdImgIndex], bird.x, bird.y, bird.width, bird.height);
+    
 
     if (bird.y > board.height) {
         dieSound.play(); // Play die sound if bird falls below the board
@@ -120,6 +133,11 @@ function update() {
         context.fillText("Final Score: " + score, boardWidth / 2 - 105, boardHeight / 2 + 40);
     }
 
+}
+
+function animateBird() {
+    birdImgIndex++;
+    birdImgIndex %= birdImgs.length; // Loop through bird images for animation
 }
 
 function placePipes() {
