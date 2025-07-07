@@ -36,6 +36,11 @@ let gravity = 0.4; //gravity effect on the bird
 let gameOver = false; // Game over flag
 let score = 0; // Score variable
 
+let wingSound = new Audio("assets/sfx_wing.wav");
+let hitSound = new Audio("assets/sfx_hit.wav");
+let dieSound = new Audio("assets/sfx_die.wav");
+let bgm = new Audio("assets/bgm_mario.mp3");
+
 window.onload = function() {
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -73,6 +78,8 @@ function update() {
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
 
     if (bird.y > board.height) {
+        dieSound.play(); // Play die sound if bird falls below the board
+
     gameOver = true; // Set game over flag if bird falls below the board
     }
 
@@ -91,6 +98,7 @@ function update() {
 
         // Check for collision with the bird
         if (detectCollision(bird, pipe)) {
+            hitSound.play(); // Play hit sound on collision
             gameOver = true; // Set game over flag if collision occurs}
         }
         
@@ -143,6 +151,7 @@ function placePipes() {
 
 function moveBird(event) {
     if (event.key === "ArrowUp" || event.key === " ") {
+        wingSound.play(); // Play wing sound on jump
         //jump the bird
         velocityY = -6; // Move the bird up by 50 pixels
         //reset
