@@ -1,2 +1,5 @@
-# flappy-bird
-Javascript flappy bird game
+# Flappy Bird
+
+Javascript Flappy Bird game
+
+![Flappy Bird game screenshot](screenshot.png)
